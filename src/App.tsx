@@ -15,8 +15,8 @@ function App() {
         <Svajper
           onDraggedToIndex={(i) => setSelectedItemIndex(i)}
           selectedItemIndex={selectedItemIndex}
-          direction={"horizontal"}
-          slideSize={200} // width or height depending on direction
+          direction={"vertical"}
+          slideSize={260} // width or height depending on direction
         >
           {items.map((i, idx) => (
             <div

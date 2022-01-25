@@ -9,8 +9,10 @@ import React, {
 import classNames from "classnames";
 import styles from "./Svajper.module.scss";
 
+type Direction = "horizontal" | "vertical";
+
 type Props = PropsWithChildren<{
-  direction: "horizontal" | "vertical";
+  direction: Direction;
   selectedItemIndex: number;
   onDraggedToIndex: (index: number) => void;
   slideSize: number;
@@ -23,18 +25,20 @@ const Slajd = ({
   children,
   index,
   size,
+  direction,
 }: PropsWithChildren<{
   index: number;
   size: number;
+  direction: Direction;
 }>) => {
   return (
     <div
-      style={{
-        position: "absolute",
-        width: size,
-        left: index * size,
-        top: 0,
-      }}
+      className={styles.slajd}
+      style={
+        direction === "horizontal"
+          ? { left: index * size, top: 0, width: size }
+          : { top: index * size, left: 0, height: size }
+      }
     >
       {children}
     </div>
@@ -56,10 +60,12 @@ const Svajper = ({
 
   const numItems = React.Children.count(children);
 
+  const isHorizontal = direction === "horizontal";
+
   const onPointerDown: PointerEventHandler<HTMLDivElement> = useCallback(
     (e) => {
       setIsDragging(true);
-      touchStart.current = e.clientX;
+      touchStart.current = isHorizontal ? e.clientX : e.clientY;
       indexWhenDragStart.current = selectedItemIndex;
     },
     [selectedItemIndex]
@@ -72,7 +78,9 @@ const Svajper = ({
   const onPointerMove: PointerEventHandler<HTMLDivElement> = useCallback(
     (e) => {
       if (dragging) {
-        setDragDelta(e.clientX - touchStart.current);
+        setDragDelta(
+          (isHorizontal ? e.clientX : e.clientY) - touchStart.current
+        );
         const threshold = slideSize / 2;
         const shouldChangeSlide = Math.abs(dragDelta) > threshold;
         if (shouldChangeSlide) {
@@ -112,18 +120,19 @@ const Svajper = ({
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
       className={classNames(styles.svajper, {
-        [styles.horizontal]: direction === "horizontal",
-        [styles.vertical]: direction === "vertical",
+        [styles.horizontal]: isHorizontal,
+        [styles.vertical]: !isHorizontal,
       })}
       ref={parentRef}
       style={{
-        transform: `translateX(${
+        transform: `translate${isHorizontal ? "X" : "Y"}(${
           dragging
             ? -indexWhenDragStart.current * slideSize + dragDelta
             : -selectedItemIndex * slideSize
         }px)`,
         transition: dragging ? "none" : undefined,
-        width: `${numItems * slideSize}px`,
+        width: isHorizontal ? `${numItems * slideSize}px` : undefined,
+        height: !isHorizontal ? `${numItems * slideSize}px` : undefined,
       }}
     >
       {React.Children.toArray(children)
@@ -133,7 +142,7 @@ const Svajper = ({
         }))
         .slice(startIndexToRender, endIndexToRender)
         .map(({ child, index }) => (
-          <Slajd index={index} size={slideSize}>
+          <Slajd index={index} size={slideSize} direction={direction}>
             {child}
           </Slajd>
         ))}
