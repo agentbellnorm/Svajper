@@ -2,14 +2,13 @@ import React, {
   PointerEventHandler,
   PropsWithChildren,
   useCallback,
-  useEffect,
   useRef,
   useState,
 } from "react";
 import classNames from "classnames";
 import styles from "./Svajper.module.scss";
 
-type Direction = "horizontal" | "vertical";
+export type Direction = "horizontal" | "vertical";
 
 type Props = PropsWithChildren<{
   direction: Direction;
@@ -45,6 +44,10 @@ const Slajd = ({
   );
 };
 
+const getKey = (child: any): React.Key => {
+  return child.key as React.Key;
+};
+
 const Svajper = ({
   children,
   direction,
@@ -68,12 +71,8 @@ const Svajper = ({
       touchStart.current = isHorizontal ? e.clientX : e.clientY;
       indexWhenDragStart.current = selectedItemIndex;
     },
-    [selectedItemIndex]
+    [selectedItemIndex, isHorizontal]
   );
-
-  useEffect(() => {
-    console.log("selectedItemIndex", selectedItemIndex);
-  }, [selectedItemIndex]);
 
   const onPointerMove: PointerEventHandler<HTMLDivElement> = useCallback(
     (e) => {
@@ -101,6 +100,7 @@ const Svajper = ({
       children,
       onDraggedToIndex,
       slideSize,
+      isHorizontal,
     ]
   );
 
@@ -142,7 +142,12 @@ const Svajper = ({
         }))
         .slice(startIndexToRender, endIndexToRender)
         .map(({ child, index }) => (
-          <Slajd index={index} size={slideSize} direction={direction}>
+          <Slajd
+            key={getKey(child)}
+            index={index}
+            size={slideSize}
+            direction={direction}
+          >
             {child}
           </Slajd>
         ))}
