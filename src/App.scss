@@ -1,0 +1,45 @@
+* {box-sizing: border-box}
+
+.App {
+  margin: 50px auto;
+  height: 480px;
+  width: 800px;
+  text-align: center;
+  border: 2px solid red;
+}
+
+.shelfCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 20px;
+  min-width: 200px;
+  height: 260px;
+
+
+  img {
+    width: 160px;
+    height: 160px;
+    -webkit-user-drag: none;
+  }
+}
+
+.selected {
+  img {
+    border: none;
+    border-radius: 2px;
+    box-shadow: 0 0 0 3px white;
+    outline: none;
+    transition: .5s;
+  }
+}
+
+.devControls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+
+
