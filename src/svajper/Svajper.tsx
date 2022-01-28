@@ -130,7 +130,7 @@ const Svajper = ({
       style={{
         transition: dragging ? "none" : undefined,
         transform: dragging
-          ? touchStartTranslate.current
+          ? touchStartTranslate.current // only valid used on first render after touch down, touch move will take over.
           : translateXorY(direction, -selectedItemIndex * slideSize),
         width: isHorizontal ? `${numItems * slideSize}px` : undefined,
         height: !isHorizontal ? `${numItems * slideSize}px` : undefined,
